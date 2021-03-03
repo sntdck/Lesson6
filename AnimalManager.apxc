@@ -1,0 +1,31 @@
+@RestResource(urlMapping='/animals/*')
+global with sharing class AnimalManager {
+    @HttpGet
+    global static Animal__c getAnimalById() {
+        RestRequest request = RestContext.request;
+        String animalId = request.requestURI.substring(
+            request.requestURI.lastIndexOf('/')+1);
+        List<Animal__c> result =  [SELECT ExternalID__c, Name, Eats__c, Says__c
+                                   FROM Animal__c
+                                   WHERE Id = :animalId];
+        RestResponse response = new RestResponse();
+        if (result.isEmpty() == true) {
+            HttpResponse responseHttp = AnimalTestClass.getAnimal(Integer.valueof(animalId));           
+            Animal__c animals = AnimalFields.getAnimals(responseHttp.getBody());
+            if (animals.Eats__c.length() != 0 && animals.Says__c.length() != 0 && animals.name.length() != 0) {
+                insert animals;
+                response.responseBody = Blob.valueOf(JSON.serialize(animals));
+                System.debug('Received data');
+                System.debug(animals);
+            } else {
+                System.debug('There is no record with this id');
+                response.responseBody = Blob.valueOf('There is no record with this id');
+            }
+            
+        } else {
+            System.debug('Received data');
+            System.debug(result);
+            response.responseBody = Blob.valueOf(JSON.serialize(result));
+        }
+    }
+}

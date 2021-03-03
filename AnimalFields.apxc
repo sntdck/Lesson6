@@ -1,0 +1,19 @@
+public class AnimalFields {   
+	public AnimalData animal;
+    
+    public class AnimalData {
+		public Integer id;	
+		public String name;	
+		public String eats;	
+		public String says;	
+	} 
+    
+    public static Animal__c getAnimals(String JSONString){
+        AnimalFields fields = (AnimalFields) JSON.deserialize(JSONString, AnimalFields.class);
+        Animal__c animal = new Animal__c();
+        animal.Eats__c = fields.animal.eats;
+        animal.Says__c = fields.animal.says;
+        animal.Name = fields.animal.name;
+        return animal;
+    }
+}

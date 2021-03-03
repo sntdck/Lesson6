@@ -1,0 +1,15 @@
+@IsTest
+public class AnimalManagerTest {
+    @isTest static void testGetAnimalById() {
+        Id animalId = createTestRecord();
+        RestRequest request = new RestRequest();
+        request.requestUri =
+            'https://th-apex-http-callout.herokuapp.com/animals/'
+            + animalId;
+        request.httpMethod = 'GET';
+        RestContext.request = request;
+        Animal__c thisAnimal = AnimalManager.getAnimalById();
+        System.assert(thisAnimal != null);
+        System.assertEquals('Test record', thisAnimal.Name);
+    }
+}

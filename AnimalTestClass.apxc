@@ -1,0 +1,20 @@
+public class AnimalTestClass {
+    public static HttpResponse getAnimal(Integer externalId) {
+      Http http = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint('https://th-apex-http-callout.herokuapp.com/animals/' + externalId);
+        request.setMethod('GET');
+        HttpResponse response = http.send(request);
+       	return response;
+    }
+    
+     public static Map<Integer,AnimalFields> getAnimals(List<Integer> externalId) {
+        Map<Integer,AnimalFields> resultMap = new Map<Integer,AnimalFields>();       
+         for (Integer integ : externalId) {
+             HttpResponse response = getAnimal(integ);
+             AnimalFields animalRes = (AnimalFields) JSON.deserialize(response.getBody(), AnimalFields.class);
+             resultMap.put(integ,animalRes);
+         }
+        return resultMap;
+    }
+}

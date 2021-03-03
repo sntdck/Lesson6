@@ -1,0 +1,18 @@
+global class AnimalFutureClass {
+    
+    @future(callout = true)
+    public static void animalRESTCallout(List<Integer> externalId) {
+        
+        Map<Integer,AnimalFields> resultMap = AnimalTestClass.getAnimals(externalId);
+        
+        List<Animal__c> updateAnimals = [SELECT ExternalId__c,Name, Eats__c, Says__c FROM Animal__c WHERE ExternalId__c IN : resultMap.keySet()];
+        for(Animal__c animal : updateAnimals) {
+            AnimalFields response = resultMap.get(animal.ExternalId__c.intValue());
+            animal.Eats__c = response.animal.eats;
+            animal.Says__c = response.animal.says;
+            animal.Name = response.animal.name;
+        } 
+        
+        update updateAnimals;
+    }
+}
